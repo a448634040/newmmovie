@@ -1,6 +1,8 @@
 <template>
      <div class="movie_body">
+       <Scroller :handleToScroll='handleToScroll' :handleToTouchEnd='handleToTouchEnd'>
     <ul>
+      <li class="pulldown">{{pullMsg}}</li>
       <li v-for="item in playSoonList" :key="item.id">
         <div class="pic_show">
           <img :src="item.img | setWH('120.180')" />
@@ -16,6 +18,7 @@
         <div class="btn_pre">预售</div>
       </li>
     </ul>
+    </Scroller>
   </div>
 </template>
 
@@ -23,7 +26,8 @@
 export default {
   data() {
     return {
-      playSoonList:[]
+      playSoonList:[],
+      pullMsg:''
     }
   },
 name :'PlaySoon',
@@ -35,6 +39,32 @@ mounted() {
     }
   })
 },
+methods:{
+  handleToScroll(pos){
+    console.log('3333333333333')
+    if(pos.y>30){
+      console.log('3333333333333')
+      this.pullMsg='正在获取数据'
+    }
+  },
+  handleToTouchEnd(pos){
+    console.log(pos)
+    if(pos.y>30){
+      console.log('11')
+      this.Axios.get('/api/movieComingList?cityId=20').then((res)=>{
+    var msg=res.data.msg;
+    if(msg==='ok'){
+      console.log('22')
+      this.pullMsg='请求成功'
+      setTimeout(()=>{
+        this.playSoonList=res.data.data.comingList;
+        this.pullMsg=''
+      },1000)
+    }
+  })
+    }
+  }
+}
 }
 </script>
 

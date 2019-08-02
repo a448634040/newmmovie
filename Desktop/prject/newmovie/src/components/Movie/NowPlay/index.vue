@@ -1,9 +1,11 @@
 <template>
 
-    <div class="movie_body">
+    <div class="movie_body" ref="movie_body">
+      <Scroller :handleToTouchEnd='handleToTouchEnd'  :handleToScroll='handleToScroll'>
     <ul>
+      <li class="pulldown">{{pullDownMsg}}</li>
       <li v-for="item in movieList" :key="item.id">
-        <div class="pic_show">
+        <div class="pic_show" @tap='handdleToDetail'> 
           <img :src="item.img | setWH('128.180')" />
         </div>
         <div class="info_list">
@@ -18,24 +20,52 @@
         <div class="btn_mall">购票</div>
       </li>
     </ul>
+    </Scroller>
   </div>
 </template>
 
 <script>
+
 export default {
 name :'NowPlay',
 data(){
   return {
-    movieList:[]
+    movieList:[],
+    pullDownMsg:''
   }
 },
 mounted(){
   this.Axios.get('api/movieOnInfoList?cityId=352').then((res)=>{
     var msg=res.data.msg;
     if(msg==='ok'){
-      this.movieList=res.data.data.movieList
+      this.movieList=res.data.data.movieList;
     }
   })
+},
+methods:{
+  handdleToDetail(){
+    console.log('handdleToDetail')
+  },
+  handleToScroll(pos){
+    if(pos.y>30){
+      this.pullDownMsg='正在更新数据'
+    }
+  },
+  handleToTouchEnd(pos){
+    console.log(pos)
+    if(pos.y>30){
+      this.Axios.get('api/movieOnInfoList?cityId=22').then((res)=>{
+        var msg=res.data.msg;
+        if(msg==='ok'){
+          this.pullDownMsg='请求成功'
+          setTimeout(()=>{
+            this.movieList=res.data.data.movieList;
+            this.pullDownMsg='';
+          },1000)
+        }
+      })
+    }
+  }
 }
 }
 </script>
@@ -53,4 +83,5 @@ mounted(){
 .movie_body .info_list img{ width:50px; position: absolute; right:10px; top: 5px;}
 .movie_body .btn_mall{ width:47px; height:27px; line-height: 28px; text-align: center; background-color: #f03d37; color: #fff; border-radius: 4px; font-size: 12px; cursor: pointer;}
 .movie_body .btn_pre{ background-color: #3c9fe6;}
+.movie_body .pulldown{margin: 0;padding: 0;border: none}
 </style>
