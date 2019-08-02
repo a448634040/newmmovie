@@ -12,7 +12,9 @@ Vue.filter('setWH', (url, arg) => {
 })
 
 Vue.config.productionTip = false
-
+//引入better-scroll全局组件
+import Scroller from '@/components/Scroller'
+Vue.component('Scroller',Scroller);
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
